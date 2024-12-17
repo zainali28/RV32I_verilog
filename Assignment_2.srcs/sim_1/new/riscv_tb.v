@@ -41,6 +41,7 @@ module riscv_tb;
     wire [31:0] alu_op1_sim;
     wire [31:0] alu_op2_sim;
     wire [31:0] pc_offset_sum_sim;
+    wire [31:0] dmem_out_sim;
 
     // Instantiate the Unit Under Test (UUT)
     riscv uut (
@@ -60,7 +61,8 @@ module riscv_tb;
         .imm_sim(imm_sim),
         .alu_op1_sim(alu_op1_sim),
         .alu_op2_sim(alu_op2_sim),
-        .alu_output(alu_output)
+        .alu_output(alu_output),
+        .dmem_out_sim(dmem_out_sim)
     );
 
     initial begin

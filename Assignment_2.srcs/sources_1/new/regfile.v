@@ -39,7 +39,7 @@ module regfile(
         end
     end
     
-    always@(rs1, rs2) begin
+    always@(*) begin
         if (rs1 == 0) begin
             out_rs1 = 32'd0;
         end
@@ -54,7 +54,7 @@ module regfile(
         end
     end
     
-    always@(wb) begin
+    always@(*) begin
         if (wb && (rd != 0)) begin
             rfile[rd] = in_rd;
         end

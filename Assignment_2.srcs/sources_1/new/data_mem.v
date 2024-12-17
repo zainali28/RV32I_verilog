@@ -37,12 +37,12 @@ module data_mem(
         end
     end
     
-    always@(read) begin
+    always@(*) begin
         if (read) begin
             out_val  <= dmem[addr];
         end
     end
-    always@(posedge clk) begin 
+    always@(*) begin 
         if (write) begin
             dmem[addr] <= in_val;
         end

@@ -37,7 +37,8 @@ module riscv(
     output reg [31:0] imm_sim,
     output reg [31:0] alu_op1_sim,
     output reg [31:0] alu_op2_sim,
-    output reg [31:0] pc_offset_sum_sim
+    output reg [31:0] pc_offset_sum_sim,
+    output reg [31:0] dmem_out_sim
     );
     
     wire [31:0] pc_current_val, next_val, instr, rs1_out, rs2_out, rd_in, imm, pc_plus_four, pc_plus_offset, op2, dmem_out, alu_result, alu_op2_mux_out;
@@ -75,7 +76,7 @@ module riscv(
     
     always@(posedge clk) begin
         IF_ID <= {pc_current_val, instr};
-        ID_EX <= {reg_wb, mem_to_reg, branch, mem_write, mem_read, alu_op, alu_src, IF_ID[63-:32], rs1_out, rs2_out, imm, {IF_ID[30], IF_ID[14:12], IF_ID[11:7]}};
+        ID_EX <= {reg_wb, mem_to_reg, branch, mem_read, mem_write, alu_op, alu_src, IF_ID[63-:32], rs1_out, rs2_out, imm, {IF_ID[30], IF_ID[14:12], IF_ID[11:7]}};
         EX_MEM <= {ID_EX[144-:5], pc_plus_offset, zero, alu_result, ID_EX[41+:32], ID_EX[4:0]};
         MEM_WB <= {EX_MEM[106-:2], dmem_out, EX_MEM[37+:32], EX_MEM[4:0]};
     end
@@ -86,13 +87,15 @@ module riscv(
         pc_output = pc_current_val;
         rs1_address = instr[19:15];
         rs2_address = instr[24:20];
-        rd_address = instr[11:7];
+        // rd_address = instr[11:7];
+        rd_address = MEM_WB[0+:5];
         rs1_out_sim = rs1_out;
         rs2_out_sim = rs2_out;
         imm_sim = imm;
         alu_op1_sim = rs1_out;
-        rd_in_sim = MEM_WB[5+:32];
+        rd_in_sim = rd_in;
         pc_offset_sum_sim = pc_plus_offset;
+        dmem_out_sim = MEM_WB[38+:32];
     end
     
 endmodule
