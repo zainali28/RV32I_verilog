@@ -1,0 +1,27 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  \
+"../../../../Assignment_2.srcs/sources_1/new/alu.v" \
+"../../../../Assignment_2.srcs/sources_1/new/alu_control.v" \
+"../../../../Assignment_2.srcs/sources_1/new/control_unit.v" \
+"../../../../Assignment_2.srcs/sources_1/new/data_mem.v" \
+"../../../../Assignment_2.srcs/sources_1/new/hazard_detection_unit.v" \
+"../../../../Assignment_2.srcs/sources_1/new/imm_gen.v" \
+"../../../../Assignment_2.srcs/sources_1/new/instr_mem.v" \
+"../../../../Assignment_2.srcs/sources_1/new/mux.v" \
+"../../../../Assignment_2.srcs/sources_1/new/pc.v" \
+"../../../../Assignment_2.srcs/sources_1/new/regfile.v" \
+"../../../../Assignment_2.srcs/sources_1/new/sum.v" \
+"../../../../Assignment_2.srcs/sources_1/new/riscv.v" \
+"../../../../Assignment_2.srcs/sim_1/new/riscv_tb.v" \
+"../../../../Assignment_2.srcs/sim_1/new/pc_tb.v" \
+"../../../../Assignment_2.srcs/sim_1/new/regfile_tb.v" \
+"../../../../Assignment_2.srcs/sim_1/new/control_unit_tb.v" \
+"../../../../Assignment_2.srcs/sim_1/new/alu_control_tb.v" \
+"../../../../Assignment_2.srcs/sim_1/new/imm_gen_tb.v" \
+"../../../../Assignment_2.srcs/sim_1/new/alu_tb.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort
