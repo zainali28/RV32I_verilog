@@ -43,10 +43,15 @@ module instr_mem(
         // // imem[9] = 32'h00800093; // ADDI x1, x0, 8
         // // imem[0] = 32'h00A50233;  // addi x4, x10, x10
         // // Add more instructions as needed
-        imem[5] = 32'h00102023; // sw x1, 0(x0)
-        imem[10] = 32'h00002103; // lw x2, 0(x0)
-        imem[15] = 32'h00210133;    // add x2, x2, x2
-        imem[20] = 32'h002081B3;    // add x3, x1, x2
+        // imem[0] = 32'h00102023; // sw x1, 0(x0)
+        // imem[4] = 32'h00002103; // lw x2, 0(x0)
+        // imem[8] = 32'h00210133;    // add x2, x2, x2
+        // imem[12] = 32'h002081B3;    // add x3, x1, x2
+        // imem[0] = 32'h00800093; // addi x1, x0, 8
+        // imem[1] = 32'h00108133; // add x2, x1, x1
+        // imem[3] = 32'h002101B3; // add x3, x2, x2
+        imem[0] = 32'h00052083; // lw x1, 0(x10)
+        imem[1] = 32'h001085B3; // add x11, x1, x1
     end
     
     always@(*) begin

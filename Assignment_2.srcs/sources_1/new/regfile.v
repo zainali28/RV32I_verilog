@@ -54,7 +54,7 @@ module regfile(
         end
     end
     
-    always@(*) begin
+    always@(negedge clk) begin
         if (wb && (rd != 0)) begin
             rfile[rd] = in_rd;
         end

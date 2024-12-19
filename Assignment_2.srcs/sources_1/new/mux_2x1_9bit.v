@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 11/27/2024 03:09:11 AM
+// Create Date: 12/20/2024 04:26:15 AM
 // Design Name: 
-// Module Name: pc
+// Module Name: mux_2x1_9bit
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,21 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module pc(
-    input [31:0] next_val,
-    input clk,
-    input pc_write,
-    output reg [31:0] current_val
+module mux_2x1_9bit(
+    input [7:0] in1,
+    input [7:0] in2,
+    input sel,
+    output [7:0] out
     );
 
-    initial begin
-        current_val = 0;
-    end
-    
-    always@(posedge clk) begin
-        if (pc_write)
-            current_val <= next_val;
-        else current_val <= current_val;
-    end
-    
+    assign out = sel ? in2 : in1;
+
 endmodule

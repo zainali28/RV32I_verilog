@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 11/27/2024 03:09:11 AM
+// Create Date: 12/20/2024 03:16:46 AM
 // Design Name: 
-// Module Name: pc
+// Module Name: mux_3x1
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,21 +20,22 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module pc(
-    input [31:0] next_val,
-    input clk,
-    input pc_write,
-    output reg [31:0] current_val
+module mux_3x1(
+    input [31:0] in1,
+    input [31:0] in2,
+    input [31:0] in3,
+    input [31:0] in4,
+    input [1:0] sel,
+    output reg [31:0] out
     );
 
-    initial begin
-        current_val = 0;
+    always @(*) begin
+        case (sel)
+            2'b00: out <= in1;
+            2'b01: out <= in2;
+            2'b10: out <= in3;  
+            default: out <= 32'd0; 
+        endcase
     end
-    
-    always@(posedge clk) begin
-        if (pc_write)
-            current_val <= next_val;
-        else current_val <= current_val;
-    end
-    
+
 endmodule

@@ -12,6 +12,9 @@ verilog xil_defaultlib  \
 "../../../../Assignment_2.srcs/sources_1/new/regfile.v" \
 "../../../../Assignment_2.srcs/sources_1/new/sum.v" \
 "../../../../Assignment_2.srcs/sources_1/new/riscv.v" \
+"../../../../Assignment_2.srcs/sources_1/new/forwarding_unit.v" \
+"../../../../Assignment_2.srcs/sources_1/new/mux_3x1.v" \
+"../../../../Assignment_2.srcs/sources_1/new/mux_2x1_9bit.v" \
 "../../../../Assignment_2.srcs/sim_1/new/riscv_tb.v" \
 "../../../../Assignment_2.srcs/sim_1/new/pc_tb.v" \
 "../../../../Assignment_2.srcs/sim_1/new/regfile_tb.v" \
