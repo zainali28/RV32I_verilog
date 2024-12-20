@@ -48,7 +48,13 @@ module riscv_tb;
     wire pc_write_sim;
     wire [7:0] control_signal_sim;
     wire control_signal_mux_sel_sim;
-
+    wire idEx_muxOut_sim;
+    wire exMem_muxOut_sim;
+    wire ifId_flushOut_sim;
+    wire branch_sim;
+    wire wb_sig;
+    wire [4:0] debug;
+    
     // Instantiate the Unit Under Test (UUT)
     riscv uut (
         .clk(clk),
@@ -74,7 +80,13 @@ module riscv_tb;
         .stall_sim(stall_sim),
         .pc_write_sim(pc_write_sim),
         .control_signal_sim(control_signal_sim),
-        .control_signal_mux_sel_sim(control_signal_mux_sel_sim)
+        .control_signal_mux_sel_sim(control_signal_mux_sel_sim),
+        .idEx_muxOut_sim(idEx_muxOut_sim),
+        .exMem_muxOut_sim(exMem_muxOut_sim),
+        .ifId_flushOut_sim(ifId_flushOut_sim),
+        .branch_sim(branch_sim),
+        .wb_sig(wb_sig),
+        .debug(debug)
     );
 
     initial begin

@@ -50,8 +50,13 @@ module instr_mem(
         // imem[0] = 32'h00800093; // addi x1, x0, 8
         // imem[1] = 32'h00108133; // add x2, x1, x1
         // imem[3] = 32'h002101B3; // add x3, x2, x2
-        imem[0] = 32'h00052083; // lw x1, 0(x10)
-        imem[1] = 32'h001085B3; // add x11, x1, x1
+        // imem[0] = 32'h00052083; // lw x1, 0(x10)
+        // imem[1] = 32'h001085B3; // add x11, x1, x1
+        imem[0] = 32'h00000A63; // beq x0, x0, 20
+        imem[1] = 32'h00510633; // add x12, x2, x5
+        imem[2] = 32'h002366B3; // or x13, x6, x2
+        imem[3] = 32'h00210733; // add x14, x2, x2
+        imem[20] = 32'h06402203;    // lw x4, 100(x0)
     end
     
     always@(*) begin

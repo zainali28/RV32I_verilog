@@ -25,6 +25,7 @@ module riscv(
     output reg [63:0] IF_ID,
     output reg [144:0] ID_EX,
     output reg [9:0] ID_EX_FORW,
+    output reg [4:0] ID_EX_BP,
     output reg [106:0] EX_MEM,
     output reg [70:0] MEM_WB,
     output reg [31:0] alu_output,
@@ -45,13 +46,19 @@ module riscv(
     output reg stall_sim,
     output reg pc_write_sim,
     output reg [7:0] control_signal_sim,
-    output reg control_signal_mux_sel_sim
+    output reg control_signal_mux_sel_sim,
+    output reg idEx_muxOut_sim,
+    output reg exMem_muxOut_sim,
+    output reg ifId_flushOut_sim,
+    output reg branch_sim,
+    output reg wb_sig,
+    output reg [4:0] debug
     );
     
     wire [31:0] pc_current_val, next_val, instr, rs1_out, rs2_out, rd_in, imm, pc_plus_four, pc_plus_offset, op2, dmem_out, alu_result, alu_op2_mux_out, alu_op2_forw_mux_out, alu_op1_forw_mux_out;
-    wire [4:0] rs1, rs2, rd;
+    wire [4:0] rs1, rs2, rd, control_signal_mux_out_ex_mem;
     wire [3:0] alu_ctrl;
-    wire reg_wb, zero, branch, alu_src, mem_read, mem_to_reg, mem_write, stall_hazardOut, pcWrite_hazardOut, controlMux_hazardOut;
+    wire reg_wb, zero, branch, alu_src, mem_read, mem_to_reg, mem_write, stall_hazardOut, pcWrite_hazardOut, controlMux_hazardOut, idEx_muxOut, exMem_muxOut, ifId_flushOut;
     wire [1:0] alu_op, ForwardA, ForwardB;
     wire [7:0] control_signal_mux_out;
     // reg [63:0] IF_ID;
@@ -69,7 +76,7 @@ module riscv(
     
     pc pc1 (.next_val(next_val), .current_val(pc_current_val), .pc_write(pcWrite_hazardOut), .clk(clk));
     sum s1 (.a(pc_current_val), .b(32'd1), .result(pc_plus_four));
-    mux m1 (.in1(pc_plus_four), .in2(EX_MEM[101-:32]), .sel(EX_MEM[104] & EX_MEM[69]), .out(next_val));
+    mux m1 (.in1(pc_plus_four), .in2(EX_MEM[101-:32]), .sel((EX_MEM[104] & EX_MEM[69])), .out(next_val));
     instr_mem imem (.addr(pc_current_val), .instr(instr));
     data_mem dmem (.write(EX_MEM[102]), .read(EX_MEM[103]), .addr(EX_MEM[37+:32]), .in_val(EX_MEM[5+:32]), .clk(clk), .out_val(dmem_out));
     mux_3x1 forw_alu_mux2 (.in1(ID_EX[41+:32]), .in2(rd_in), .in3(EX_MEM[37+:32]), .sel(ForwardB), .out(alu_op2_forw_mux_out));
@@ -85,13 +92,18 @@ module riscv(
     // mux m2 (.in1(ID_EX[72:41]), .in2(ID_EX[40:9]), .sel(alu_src), .out(op2));
     forwarding_unit fu (.EX_MEM_reg_write(EX_MEM[106]), .MEM_WB_reg_write(MEM_WB[70]), .ID_EX_rs1(ID_EX_FORW[9-:5]), .ID_EX_rs2(ID_EX_FORW[0+:5]), .EX_MEM_rd(EX_MEM[0+:5]), .MEM_WB_rd(MEM_WB[0+:5]), .ForwardA(ForwardA), .ForwardB(ForwardB));
     hazard_detection_unit hu (.ID_EX_MemRead(ID_EX[141]), .ID_EX_rd(ID_EX[0+:5]), .IF_ID_rs1(IF_ID[19:15]), .IF_ID_rs2(IF_ID[24:20]), .stall(stall_hazardOut), .control_mux(controlMux_hazardOut), .pc_write(pcWrite_hazardOut));
-    mux_2x1_9bit mux_control (.in1({reg_wb, mem_to_reg, branch, mem_read, mem_write, alu_op, alu_src}), .in2(8'd0), .sel(controlMux_hazardOut), .out(control_signal_mux_out)); 
-    
+    // mux_2x1_8bit mux_control (.in1({reg_wb, mem_to_reg, branch, mem_read, mem_write, alu_op, alu_src}), .in2(8'd0), .sel(controlMux_hazardOut | idEx_muxOut), .out(control_signal_mux_out)); 
+    // mux_2x1_5bit mux_wb_m (.in1(ID_EX[144-:5]), .in2(5'd0), .sel(exMem_muxOut), .out(control_signal_mux_out_ex_mem));
+    branch_predictor bp (.branch(EX_MEM[104] & EX_MEM[69]), .ID_EX_MUX(idEx_muxOut), .EX_MEM_MUX(exMem_muxOut), .IF_ID_FLUSH(ifId_flushOut));
+
     always@(posedge clk) begin
-        if (!stall_hazardOut) IF_ID <= {pc_current_val, instr};
-        ID_EX <= {control_signal_mux_out, IF_ID[63-:32], rs1_out, rs2_out, imm, {IF_ID[30], IF_ID[14:12], IF_ID[11:7]}};
+        if (!stall_hazardOut) IF_ID <= ifId_flushOut ? 0 : {pc_current_val, instr};
+        ID_EX <= {!(controlMux_hazardOut | idEx_muxOut) ? {reg_wb, mem_to_reg, branch, mem_read, mem_write, alu_op, alu_src} : 8'd0, IF_ID[63-:32], rs1_out, rs2_out, imm, {IF_ID[30], IF_ID[14:12], IF_ID[11:7]}};
+        // ID_EX_BP <= pc_plus_offset;
+        wb_sig <= ID_EX[142];
         ID_EX_FORW <= {IF_ID[24:20], IF_ID[19:15]}; 
-        EX_MEM <= {ID_EX[144-:5], pc_plus_offset, zero, alu_result, alu_op2_forw_mux_out, ID_EX[4:0]};
+        EX_MEM <= {!exMem_muxOut ? ID_EX[144-:5] : 5'd0, pc_plus_offset, zero, alu_result, alu_op2_forw_mux_out, ID_EX[4:0]};
+        EX_MEM[104] <= ID_EX[142];
         MEM_WB <= {EX_MEM[106-:2], dmem_out, EX_MEM[37+:32], EX_MEM[4:0]};
     end
 
@@ -116,6 +128,11 @@ module riscv(
         pc_write_sim = pcWrite_hazardOut;
         control_signal_sim = control_signal_mux_out;
         control_signal_mux_sel_sim = controlMux_hazardOut;
+        idEx_muxOut_sim = idEx_muxOut;
+        exMem_muxOut_sim = exMem_muxOut;
+        ifId_flushOut_sim = ifId_flushOut;
+        branch_sim = branch;
+        debug = ID_EX[144-:5];
     end
     
 endmodule
